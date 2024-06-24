@@ -20,8 +20,8 @@ import (
 
 	clusterv1alpha2 "github.com/clusterpedia-io/api/cluster/v1alpha2"
 	kubestatemetrics "github.com/clusterpedia-io/clusterpedia/pkg/kube_state_metrics"
+	"github.com/clusterpedia-io/clusterpedia/pkg/runtime/informer"
 	"github.com/clusterpedia-io/clusterpedia/pkg/storage"
-	"github.com/clusterpedia-io/clusterpedia/pkg/synchromanager/clustersynchro/informer"
 	"github.com/clusterpedia-io/clusterpedia/pkg/synchromanager/clustersynchro/queue"
 	"github.com/clusterpedia-io/clusterpedia/pkg/synchromanager/features"
 	"github.com/clusterpedia-io/clusterpedia/pkg/utils"
@@ -93,7 +93,7 @@ func newResourceSynchro(cluster string, config ResourceSynchroConfig) *ResourceS
 	synchro := &ResourceSynchro{
 		cluster:         cluster,
 		syncResource:    config.GroupVersionResource,
-		storageResource: storageConfig.StorageGroupResource.WithVersion(storageConfig.StorageVersion.Version),
+		storageResource: storageConfig.StorageResource,
 
 		pageSize:      config.PageSizeForInformer,
 		listerWatcher: config.ListerWatcher,
@@ -104,7 +104,7 @@ func newResourceSynchro(cluster string, config ResourceSynchroConfig) *ResourceS
 
 		storage:       config.ResourceStorage,
 		convertor:     config.ObjectConvertor,
-		memoryVersion: storageConfig.MemoryVersion,
+		memoryVersion: storageConfig.MemoryResource.GroupVersion(),
 
 		stopped:              make(chan struct{}),
 		isRunnableForStorage: atomic.NewBool(true),
